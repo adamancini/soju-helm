@@ -1,1 +1,213 @@
-# placeholder
+# Default values for soju.
+# Progressive disclosure: basic configuration first, advanced options below.
+
+#
+# BASIC CONFIGURATION
+#
+
+# Instance configuration
+soju:
+  # REQUIRED: IRC server hostname (e.g. irc.example.com)
+  domain: ""
+  # Server title shown to IRC clients
+  title: "soju IRC bouncer"
+  # Message of the Day (optional, path to file or empty)
+  motd: ""
+
+# Image configuration
+image:
+  repository: codeberg.org/emersion/soju
+  tag: ""  # Defaults to Chart.appVersion
+  pullPolicy: IfNotPresent
+
+# Admin user (created via post-install Job using sojudb)
+admin:
+  # Set to true to create an admin user on first install
+  enabled: true
+  username: admin
+  # Password (auto-generated if empty, preserved across upgrades)
+  password: ""
+  # Use an existing Secret instead of generating one
+  # Secret must have keys: admin-username, admin-password
+  existingSecret: ""
+
+# Ingress configuration (serves gamja UI + soju WebSocket)
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  # Host defaults to soju.domain if not set
+  host: ""
+  tls:
+    enabled: true
+    # Secret name for TLS cert (auto from certificate.secretName if using cert-manager)
+    secretName: ""
+
+#
+# ADVANCED CONFIGURATION
+#
+
+# Database backend
+database:
+  # Driver: sqlite3 or postgres
+  driver: sqlite3
+  # SQLite settings (used when driver is sqlite3)
+  sqlite:
+    path: /data/soju.db
+  # PostgreSQL settings (used when driver is postgres)
+  postgres:
+    host: ""
+    port: 5432
+    database: soju
+    user: soju
+    password: ""
+    # Use an existing Secret for the PostgreSQL password
+    # Secret must have key specified by postgres.passwordKey
+    existingSecret: ""
+    passwordKey: "password"
+    sslmode: disable
+
+# Bundled PostgreSQL StatefulSet
+# Only used when database.driver is postgres and database.postgres.host is empty
+postgresql:
+  enabled: false
+  image:
+    repository: postgres
+    tag: "16-alpine"
+  storageSize: 5Gi
+  storageClass: ""
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
+
+# TLS certificate (cert-manager)
+certificate:
+  enabled: false
+  secretName: soju-tls
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuer
+    group: cert-manager.io
+  duration: 2160h    # 90 days
+  renewBefore: 360h  # 15 days
+  privateKey:
+    algorithm: RSA
+    size: 2048
+
+# TLS from existing Secret (alternative to certificate)
+tls:
+  existingSecret: ""
+
+# Listener configuration
+listeners:
+  # IRC with TLS (port 6697)
+  ircs: true
+  # Plain IRC (port 6667) - insecure, use for testing only
+  irc: false
+  # WebSocket (port 8080) - required for gamja web client
+  websocket: true
+  # Prometheus metrics (port 9090)
+  metrics: true
+  # Unix admin socket (for sojuctl inside the pod)
+  admin: true
+
+# Persistent storage for data (SQLite DB, uploads)
+persistence:
+  enabled: true
+  size: 1Gi
+  storageClass: ""
+  accessModes:
+    - ReadWriteOnce
+
+# File upload support
+fileUpload:
+  enabled: true
+  path: /data/uploads
+
+# Authentication method
+auth:
+  # internal, pam, oauth2, http
+  method: internal
+
+# Service configuration
+service:
+  type: ClusterIP
+  annotations: {}
+
+# Optional LoadBalancer service for direct IRC client access
+loadBalancer:
+  enabled: false
+  annotations: {}
+  # LoadBalancer IP (e.g. MetalLB)
+  loadBalancerIP: ""
+
+# Prometheus ServiceMonitor
+metrics:
+  serviceMonitor:
+    enabled: false
+    interval: 30s
+    labels: {}
+
+# Network isolation
+networkPolicy:
+  enabled: false
+  ingressControllerLabels:
+    kubernetes.io/metadata.name: traefik
+
+# Gamja web IRC client (subchart)
+gamja:
+  enabled: true
+  image:
+    repository: codeberg.org/emersion/gamja
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  server:
+    # WebSocket URL (auto-configured from soju.domain if empty)
+    url: ""
+    # Channel to auto-join on connect
+    autojoin: ""
+  resources:
+    requests:
+      cpu: 5m
+      memory: 16Mi
+    limits:
+      cpu: 50m
+      memory: 64Mi
+
+# Resource limits
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi
+
+# Security context
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop: ["ALL"]
+  readOnlyRootFilesystem: true
+
+# Pod scheduling
+podAnnotations: {}
+podLabels: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# Name overrides
+nameOverride: ""
+fullnameOverride: ""
