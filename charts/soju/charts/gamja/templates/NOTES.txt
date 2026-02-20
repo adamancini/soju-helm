@@ -1,0 +1,1 @@
+Gamja IRC web client deployed as {{ include "gamja.fullname" . }}.

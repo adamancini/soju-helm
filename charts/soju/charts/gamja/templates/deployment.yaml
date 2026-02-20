@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "gamja.fullname" . }}
+  labels:
+    {{- include "gamja.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "gamja.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "gamja.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: gamja
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        {{- with .Values.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        volumeMounts:
+        - name: config
+          mountPath: /usr/share/gamja/config.json
+          subPath: config.json
+          readOnly: true
+      volumes:
+      - name: config
+        configMap:
+          name: {{ include "gamja.fullname" . }}-config

@@ -1,0 +1,20 @@
+# Gamja IRC web client - vendored subchart
+
+image:
+  repository: codeberg.org/emersion/gamja
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+server:
+  # WebSocket URL to soju (auto-configured by parent chart if empty)
+  url: ""
+  # Channel to auto-join
+  autojoin: ""
+
+resources:
+  requests:
+    cpu: 5m
+    memory: 16Mi
+  limits:
+    cpu: 50m
+    memory: 64Mi
