@@ -51,8 +51,10 @@ spec:
         - name: config
           mountPath: /etc/soju
           readOnly: true
+        {{- if .Values.persistence.enabled }}
         - name: data
           mountPath: /data
+        {{- end }}
       volumes:
       - name: config
         configMap:
@@ -60,7 +62,9 @@ spec:
           items:
           - key: config
             path: config
+      {{- if .Values.persistence.enabled }}
       - name: data
         persistentVolumeClaim:
           claimName: {{ include "soju.fullname" . }}-data
+      {{- end }}
 {{- end }}
