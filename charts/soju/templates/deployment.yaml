@@ -1,0 +1,138 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "soju.fullname" . }}
+  labels:
+    {{- include "soju.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "soju.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- if .Values.listeners.metrics }}
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+        {{- end }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "soju.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: soju
+        {{- with .Values.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        args:
+          - "-config"
+          - "/etc/soju/config"
+        ports:
+        {{- if .Values.listeners.ircs }}
+        - name: ircs
+          containerPort: 6697
+          protocol: TCP
+        {{- end }}
+        {{- if .Values.listeners.irc }}
+        - name: irc
+          containerPort: 6667
+          protocol: TCP
+        {{- end }}
+        {{- if .Values.listeners.websocket }}
+        - name: websocket
+          containerPort: 8080
+          protocol: TCP
+        {{- end }}
+        {{- if .Values.listeners.metrics }}
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        {{- end }}
+        startupProbe:
+          tcpSocket:
+            port: {{ include "soju.probePort" . }}
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 12
+        livenessProbe:
+          tcpSocket:
+            port: {{ include "soju.probePort" . }}
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          tcpSocket:
+            port: {{ include "soju.probePort" . }}
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 2
+        {{- with .Values.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        volumeMounts:
+        - name: config
+          mountPath: /etc/soju
+          readOnly: true
+        {{- if eq (include "soju.tlsEnabled" .) "true" }}
+        - name: tls
+          mountPath: /tls
+          readOnly: true
+        {{- end }}
+        {{- if .Values.persistence.enabled }}
+        - name: data
+          mountPath: /data
+        {{- end }}
+        {{- if .Values.listeners.admin }}
+        - name: run
+          mountPath: /run/soju
+        {{- end }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ include "soju.fullname" . }}-config
+          items:
+          - key: config
+            path: config
+      {{- if eq (include "soju.tlsEnabled" .) "true" }}
+      - name: tls
+        secret:
+          secretName: {{ include "soju.tlsSecretName" . }}
+      {{- end }}
+      {{- if .Values.persistence.enabled }}
+      - name: data
+        persistentVolumeClaim:
+          claimName: {{ include "soju.fullname" . }}-data
+      {{- end }}
+      {{- if .Values.listeners.admin }}
+      - name: run
+        emptyDir: {}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
