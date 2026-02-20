@@ -1,0 +1,70 @@
+name: Release Helm Chart
+
+on:
+  push:
+    tags:
+      - 'chart-v*'
+
+jobs:
+  release:
+    name: Release Helm Chart
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "$GITHUB_ACTOR"
+          git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.16.0
+
+      - name: Package Helm Chart
+        run: helm package charts/soju --destination .deploy
+
+      - name: Extract version
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#chart-}" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ steps.version.outputs.version }}
+          files: .deploy/*.tgz
+          generate_release_notes: true
+
+      - name: Publish to GitHub Pages (Chart Repository)
+        run: |
+          git clone --single-branch --branch gh-pages https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages || {
+            mkdir gh-pages
+            cd gh-pages
+            git init
+            git checkout -b gh-pages
+            cd ..
+          }
+          cp .deploy/*.tgz gh-pages/
+          cd gh-pages
+          helm repo index . --url https://${{ github.repository_owner }}.github.io/soju-helm
+          git add .
+          git commit -m "Release ${{ github.ref_name }}"
+          git push origin gh-pages || git push --set-upstream origin gh-pages
+
+      - name: Login to GitHub Container Registry (OCI)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push Chart to OCI Registry
+        run: helm push .deploy/*.tgz oci://ghcr.io/${{ github.repository_owner }}/charts
