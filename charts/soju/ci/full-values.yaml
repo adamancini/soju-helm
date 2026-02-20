@@ -1,0 +1,73 @@
+# CI test: All features enabled
+soju:
+  domain: irc.test.example.com
+  title: "Full Feature Test"
+  motd: /etc/soju/motd.txt
+
+image:
+  tag: "latest"
+
+admin:
+  enabled: true
+  username: fulladmin
+  password: fullpass123
+
+ingress:
+  enabled: true
+  className: traefik
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: default-headers@kubernetescrd
+  tls:
+    enabled: true
+
+certificate:
+  enabled: true
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuer
+    group: cert-manager.io
+
+listeners:
+  ircs: true
+  irc: true
+  websocket: true
+  metrics: true
+  admin: true
+
+loadBalancer:
+  enabled: true
+  loadBalancerIP: "10.0.0.200"
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: irc.test.example.com
+
+persistence:
+  size: 5Gi
+
+fileUpload:
+  enabled: true
+
+metrics:
+  serviceMonitor:
+    enabled: true
+    interval: 15s
+    labels:
+      release: prometheus
+
+networkPolicy:
+  enabled: true
+
+gamja:
+  enabled: true
+  server:
+    autojoin: "#test"
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+podAnnotations:
+  custom-annotation: "test"

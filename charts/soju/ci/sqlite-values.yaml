@@ -1,0 +1,27 @@
+# CI test: SQLite with all features
+soju:
+  domain: test.example.com
+  title: "CI Test Bouncer"
+
+admin:
+  enabled: true
+  username: testadmin
+  password: testpass123
+
+certificate:
+  enabled: true
+
+ingress:
+  enabled: true
+  className: nginx
+  tls:
+    enabled: true
+
+listeners:
+  ircs: true
+  irc: true
+  websocket: true
+  metrics: true
+
+fileUpload:
+  enabled: true

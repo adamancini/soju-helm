@@ -1,0 +1,3 @@
+# CI test: Minimal required values
+soju:
+  domain: test.example.com

@@ -1,0 +1,18 @@
+# CI test: PostgreSQL backend
+soju:
+  domain: test.example.com
+
+database:
+  driver: postgres
+  postgres:
+    host: postgres.example.com
+    port: 5432
+    database: soju
+    user: soju
+    password: testpass
+
+admin:
+  enabled: true
+
+gamja:
+  enabled: false
