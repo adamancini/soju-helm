@@ -1,0 +1,32 @@
+{{- if .Values.loadBalancer.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "soju.fullname" . }}-lb
+  labels:
+    {{- include "soju.labels" . | nindent 4 }}
+  {{- with .Values.loadBalancer.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: LoadBalancer
+  {{- if .Values.loadBalancer.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.loadBalancer.loadBalancerIP }}
+  {{- end }}
+  ports:
+  {{- if .Values.listeners.ircs }}
+  - port: 6697
+    targetPort: ircs
+    name: ircs
+    protocol: TCP
+  {{- end }}
+  {{- if .Values.listeners.irc }}
+  - port: 6667
+    targetPort: irc
+    name: irc
+    protocol: TCP
+  {{- end }}
+  selector:
+    {{- include "soju.selectorLabels" . | nindent 4 }}
+{{- end }}

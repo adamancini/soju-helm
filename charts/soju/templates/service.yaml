@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "soju.fullname" . }}
+  labels:
+    {{- include "soju.labels" . | nindent 4 }}
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+  {{- if .Values.listeners.ircs }}
+  - port: 6697
+    targetPort: ircs
+    name: ircs
+    protocol: TCP
+  {{- end }}
+  {{- if .Values.listeners.irc }}
+  - port: 6667
+    targetPort: irc
+    name: irc
+    protocol: TCP
+  {{- end }}
+  {{- if .Values.listeners.websocket }}
+  - port: 8080
+    targetPort: websocket
+    name: websocket
+    protocol: TCP
+  {{- end }}
+  {{- if .Values.listeners.metrics }}
+  - port: 9090
+    targetPort: metrics
+    name: metrics
+    protocol: TCP
+  {{- end }}
+  selector:
+    {{- include "soju.selectorLabels" . | nindent 4 }}
