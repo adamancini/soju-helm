@@ -1,0 +1,44 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "soju.fullname" . }}
+  labels:
+    {{- include "soju.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.ingress.className }}
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- end }}
+  {{- if .Values.ingress.tls.enabled }}
+  tls:
+  - hosts:
+    - {{ .Values.ingress.host | default .Values.soju.domain }}
+    secretName: {{ .Values.ingress.tls.secretName | default (include "soju.tlsSecretName" .) }}
+  {{- end }}
+  rules:
+  - host: {{ .Values.ingress.host | default .Values.soju.domain }}
+    http:
+      paths:
+      {{- if .Values.listeners.websocket }}
+      - path: /socket
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ include "soju.fullname" . }}
+            port:
+              number: 8080
+      {{- end }}
+      {{- if .Values.gamja.enabled }}
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Release.Name }}-gamja
+            port:
+              number: 80
+      {{- end }}
+{{- end }}

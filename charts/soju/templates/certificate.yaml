@@ -1,0 +1,26 @@
+{{- if .Values.certificate.enabled }}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "soju.fullname" . }}-tls
+  labels:
+    {{- include "soju.labels" . | nindent 4 }}
+spec:
+  secretName: {{ .Values.certificate.secretName }}
+  duration: {{ .Values.certificate.duration }}
+  renewBefore: {{ .Values.certificate.renewBefore }}
+  commonName: {{ .Values.soju.domain }}
+  isCA: false
+  privateKey:
+    algorithm: {{ .Values.certificate.privateKey.algorithm }}
+    size: {{ .Values.certificate.privateKey.size }}
+  usages:
+    - server auth
+    - client auth
+  dnsNames:
+    - {{ .Values.soju.domain }}
+  issuerRef:
+    name: {{ .Values.certificate.issuerRef.name }}
+    kind: {{ .Values.certificate.issuerRef.kind }}
+    group: {{ .Values.certificate.issuerRef.group }}
+{{- end }}
