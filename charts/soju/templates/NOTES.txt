@@ -1,0 +1,54 @@
+Thank you for installing {{ .Chart.Name }}!
+
+Your soju IRC bouncer is being deployed as {{ include "soju.fullname" . }}.
+
+1. Check pod status:
+   kubectl get pods -l app.kubernetes.io/name={{ include "soju.name" . }} -n {{ .Release.Namespace }}
+
+2. View logs:
+   kubectl logs -f deployment/{{ include "soju.fullname" . }} -n {{ .Release.Namespace }}
+
+{{- if .Values.admin.enabled }}
+
+3. Admin user:
+   An admin user was created automatically via the post-install hook.
+   {{- if not .Values.admin.existingSecret }}
+   Retrieve credentials:
+     kubectl get secret {{ include "soju.fullname" . }}-admin -n {{ .Release.Namespace }} -o jsonpath='{.data.admin-username}' | base64 -d
+     kubectl get secret {{ include "soju.fullname" . }}-admin -n {{ .Release.Namespace }} -o jsonpath='{.data.admin-password}' | base64 -d
+   {{- end }}
+{{- else }}
+
+3. Create an admin user manually:
+   kubectl exec -it deployment/{{ include "soju.fullname" . }} -n {{ .Release.Namespace }} -- \
+     sojuctl user create -admin -username <user> -password <pass>
+{{- end }}
+
+{{- if .Values.ingress.enabled }}
+
+4. Access gamja web client:
+   {{- if .Values.ingress.tls.enabled }}
+   https://{{ .Values.ingress.host | default .Values.soju.domain }}
+   {{- else }}
+   http://{{ .Values.ingress.host | default .Values.soju.domain }}
+   {{- end }}
+{{- else }}
+
+4. Access gamja (port-forward):
+   kubectl port-forward svc/{{ .Release.Name }}-gamja 8080:80 -n {{ .Release.Namespace }}
+   Open http://localhost:8080
+{{- end }}
+
+5. Connect an IRC client:
+   {{- if .Values.loadBalancer.enabled }}
+   Server: {{ .Values.soju.domain }}
+   {{- else }}
+   kubectl port-forward svc/{{ include "soju.fullname" . }} 6697:6697 -n {{ .Release.Namespace }}
+   Server: localhost
+   {{- end }}
+   Port: 6697 (TLS)
+
+For more information:
+- soju: https://codeberg.org/emersion/soju
+- gamja: https://codeberg.org/emersion/gamja
+- Chart: https://github.com/adamancini/soju-helm
