@@ -5,12 +5,14 @@ on:
     paths:
       - 'charts/**'
       - '.github/workflows/lint-test.yml'
+      - '.github/workflows/check-upstream.yml'
   push:
     branches:
       - main
     paths:
       - 'charts/**'
       - '.github/workflows/lint-test.yml'
+      - '.github/workflows/check-upstream.yml'
 
 jobs:
   lint-chart:
