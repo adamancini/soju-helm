@@ -3,4 +3,4 @@ name: gamja
 description: Vendored gamja IRC web client for soju
 type: application
 version: 0.1.0
-appVersion: "latest"
+appVersion: "1.0.0-beta.11"

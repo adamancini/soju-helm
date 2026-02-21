@@ -17,7 +17,7 @@ soju:
 # Image configuration
 image:
   repository: codeberg.org/emersion/soju
-  tag: ""  # Defaults to Chart.appVersion
+  tag: "v0.10.1"  # Pinned to upstream release
   pullPolicy: IfNotPresent
 
 # Admin user (created via post-install Job using sojudb)
@@ -162,7 +162,7 @@ gamja:
   enabled: true
   image:
     repository: codeberg.org/emersion/gamja
-    tag: "latest"
+    tag: "v1.0.0-beta.11"
     pullPolicy: IfNotPresent
   server:
     # WebSocket URL (auto-configured from soju.domain if empty)

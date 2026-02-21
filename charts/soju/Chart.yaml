@@ -3,7 +3,7 @@ name: soju
 description: A Helm chart for deploying soju IRC bouncer with gamja web client
 type: application
 version: 0.1.0
-appVersion: "latest"
+appVersion: "0.10.1"
 keywords:
   - soju
   - irc
