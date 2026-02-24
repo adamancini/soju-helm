@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2026-02-24
+
+### Fixed
+
+- Added security context to gamja subchart Deployment (non-root, read-only rootfs, seccomp, drop all caps)
+- Added readiness and liveness probes to gamja subchart Deployment
+- Guarded admin Job data PVC mount with persistence.enabled condition
+- Pinned Trivy GitHub Action from @master to @0.28.0
+
+### Changed
+
+- Pinned soju image to v0.10.1 (was "latest")
+- Pinned gamja image to v1.0.0-beta.11 (was "latest")
+
+### Added
+
+- Upstream release watch workflow (check-upstream.yml) polling Codeberg daily for new soju/gamja releases
+
 ## [0.1.0] - 2026-02-20
 
 ### Added
@@ -26,4 +44,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CI/CD: Helm lint, kubeconform (K8s 1.28-1.32), Trivy, chart-testing
 - Release workflow: GitHub Releases, GitHub Pages chart repo, OCI registry (ghcr.io)
 
+[0.1.1]: https://github.com/adamancini/soju-helm/releases/tag/chart-v0.1.1
 [0.1.0]: https://github.com/adamancini/soju-helm/releases/tag/chart-v0.1.0
