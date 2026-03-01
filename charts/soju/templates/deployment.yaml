@@ -32,6 +32,15 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if .Values.listeners.admin }}
+      initContainers:
+      - name: clean-admin-socket
+        image: busybox:latest
+        command: ["rm", "-f", "/run/soju/admin"]
+        volumeMounts:
+        - name: run
+          mountPath: /run/soju
+      {{- end }}
       containers:
       - name: soju
         {{- with .Values.securityContext }}

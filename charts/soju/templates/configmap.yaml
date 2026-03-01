@@ -23,7 +23,7 @@ data:
     listen unix+admin:///run/soju/admin
     {{- end }}
     {{- if .Values.listeners.metrics }}
-    listen http+prometheus://0.0.0.0:9090
+    listen http+prometheus://localhost:9090
     {{- end }}
     {{- if eq (include "soju.tlsEnabled" .) "true" }}
     tls /tls/tls.crt /tls/tls.key
