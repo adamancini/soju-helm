@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.7] - 2026-06-21
+
+### Changed
+
+- Admin secret now resolves with the precedence **explicit value > existing in-cluster value > random** (was lookup-first). Setting `admin.password` now reliably wins and stays stable under `helm template`/ArgoCD, where Helm's `lookup` is unavailable and the random fallback would otherwise be regenerated on every render.
+
 ## [0.1.6] - 2026-06-21
 
 ### Changed

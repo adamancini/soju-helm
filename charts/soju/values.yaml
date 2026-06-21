@@ -25,7 +25,10 @@ admin:
   # Set to true to create an admin user on first install
   enabled: true
   username: admin
-  # Password (auto-generated if empty, preserved across upgrades)
+  # Password. Precedence: this value > existing in-cluster value > random.
+  # Set this (or admin.existingSecret) for GitOps/ArgoCD; the random fallback
+  # only works under `helm install`/`helm upgrade` and would otherwise be
+  # regenerated on every `helm template` render.
   password: ""
   # Use an existing Secret instead of generating one
   # Secret must have keys: admin-username, admin-password
