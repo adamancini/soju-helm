@@ -73,7 +73,7 @@ jobs:
           git push origin gh-pages || git push --set-upstream origin gh-pages
 
       - name: Login to GitHub Container Registry (OCI)
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
