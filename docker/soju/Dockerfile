@@ -5,7 +5,7 @@
 # busybox to provide that shell without touching soju's own build.
 ARG SOJU_VERSION=v0.10.1
 FROM codeberg.org/emersion/soju:${SOJU_VERSION} AS soju
-FROM busybox:1.36.1-musl
+FROM busybox:1.38.0-musl
 
 COPY --from=soju /soju /sojudb /sojuctl /usr/local/bin/
 COPY --from=soju /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
