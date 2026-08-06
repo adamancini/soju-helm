@@ -32,6 +32,10 @@ helm install soju oci://ghcr.io/adamancini/charts/soju \
   --set soju.domain=irc.example.com
 ```
 
+### Dev Builds
+
+Every push to `main` also publishes a dev build of the chart, tagged `0.0.0-main.<commit-sha>` (e.g. `0.0.0-main.a1b2c3d`) -- traceable to the exact commit, and always below every real release in semver precedence (`0.0.0 < 0.1.x`) so it can never satisfy a `>=` version constraint or be mistaken for `latest`. These are not GitHub Releases and aren't published to the GitHub Pages chart repo -- OCI only. See `.github/workflows/dev-build.yml`.
+
 ### Install from Source
 
 ```bash

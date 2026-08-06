@@ -1,0 +1,55 @@
+name: Dev Build
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-wrapper-image:
+    name: Build Wrapper Image
+    uses: ./.github/workflows/build-image.yml
+    permissions:
+      contents: read
+      packages: write
+      security-events: write
+    secrets: inherit
+
+  dev-build:
+    name: Package and Push Dev Chart
+    needs: build-wrapper-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v5
+        with:
+          version: v4.2.3
+
+      - name: Compute dev version
+        id: version
+        run: |
+          SHA=$(git rev-parse --short HEAD)
+          echo "version=0.0.0-main.${SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Package Helm Chart (dev version)
+        run: |
+          helm package charts/soju \
+            --version "${{ steps.version.outputs.version }}" \
+            --destination .deploy
+
+      - name: Login to GitHub Container Registry (OCI)
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push Dev Chart to OCI Registry
+        run: helm push .deploy/*.tgz oci://ghcr.io/${{ github.repository_owner }}/charts
