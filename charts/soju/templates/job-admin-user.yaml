@@ -24,8 +24,8 @@ spec:
       {{- end }}
       containers:
       - name: create-admin
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        image: "{{ .Values.admin.image.repository }}:{{ .Values.admin.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.admin.image.pullPolicy }}
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true

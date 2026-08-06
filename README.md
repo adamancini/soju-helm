@@ -71,6 +71,9 @@ kubectl port-forward svc/soju-gamja 8080:80
 | `admin.username` | `admin` | Admin username |
 | `admin.password` | `""` | Admin password (auto-generated if empty) |
 | `admin.existingSecret` | `""` | Use existing Secret for admin credentials |
+| `admin.image.repository` | `ghcr.io/adamancini/soju` | Image for the admin-setup Job only (busybox-wrapped soju, see below) |
+| `admin.image.tag` | `""` | Admin Job image tag (defaults to `appVersion`) |
+| `admin.image.pullPolicy` | `IfNotPresent` | Admin Job image pull policy |
 | `ingress.enabled` | `false` | Enable Ingress |
 | `ingress.className` | `""` | Ingress class name |
 | `ingress.host` | `""` | Ingress host (defaults to `soju.domain`) |
@@ -214,6 +217,12 @@ database:
 When `admin.enabled: true` (default), an admin user is created automatically via a post-install Helm hook. The hook runs `sojudb create-user` directly against the database, so it does not require a running soju server.
 
 Credentials are stored in a Secret and preserved across upgrades via `lookup`.
+
+### Container Image
+
+Upstream soju (`codeberg.org/emersion/soju`) is published `FROM scratch`: just the `soju`/`sojudb`/`sojuctl` binaries, no shell. `sojudb` only accepts the admin password via stdin (no flag or env var alternative), so the admin-setup Job's `sh -c 'echo ... | sojudb ...'` can't run against that image at all.
+
+The main Deployment still runs upstream's unmodified image directly -- it's a network-facing, long-running process and shouldn't carry a shell or coreutils as attack surface. Only the admin-setup Job uses `admin.image`, which defaults to `ghcr.io/adamancini/soju`, built from [`docker/soju/Dockerfile`](docker/soju/Dockerfile): the same upstream binaries copied onto a `busybox` base, giving just this one-shot Job a shell to pipe the password through. The image is rebuilt and pushed automatically whenever `charts/soju/values.yaml`'s pinned soju version changes (see `.github/workflows/build-image.yml`), tagged to match that version, and `release.yml` also builds it as a required step before publishing a chart release so the tag a release points at is guaranteed to exist.
 
 ### Connecting an IRC Client
 
