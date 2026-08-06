@@ -218,6 +218,8 @@ When `admin.enabled: true` (default), an admin user is created automatically via
 
 Credentials are stored in a Secret and preserved across upgrades via `lookup`.
 
+**Argo CD note:** native Helm only runs `post-install` hooks on install, never on upgrade. Argo CD has no such distinction and re-triggers the hook on every sync, so the Job is idempotent: if the admin user already exists, it logs that and exits 0 instead of failing. `hook-delete-policy` includes `before-hook-creation` so a Job left over from a prior failed run doesn't block the next sync.
+
 ### Container Image
 
 Upstream soju (`codeberg.org/emersion/soju`) is published `FROM scratch`: just the `soju`/`sojudb`/`sojuctl` binaries, no shell. `sojudb` only accepts the admin password via stdin (no flag or env var alternative), so the admin-setup Job's `sh -c 'echo ... | sojudb ...'` can't run against that image at all.

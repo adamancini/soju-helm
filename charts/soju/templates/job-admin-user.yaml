@@ -8,7 +8,7 @@ metadata:
   annotations:
     "helm.sh/hook": post-install
     "helm.sh/hook-weight": "0"
-    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 spec:
   backoffLimit: 3
   template:
@@ -35,7 +35,18 @@ spec:
         - sh
         - -c
         - |
-          echo "$ADMIN_PASS" | sojudb -config /etc/soju/config create-user "$ADMIN_USER" -admin
+          if OUTPUT=$(echo "$ADMIN_PASS" | sojudb -config /etc/soju/config create-user "$ADMIN_USER" -admin 2>&1); then
+            echo "$OUTPUT"
+            exit 0
+          fi
+          echo "$OUTPUT" >&2
+          case "$OUTPUT" in
+            *"UNIQUE constraint failed"*|*"duplicate key value violates unique constraint"*)
+              echo "Admin user \"$ADMIN_USER\" already exists, nothing to do."
+              exit 0
+              ;;
+          esac
+          exit 1
         env:
         - name: ADMIN_USER
           valueFrom:
