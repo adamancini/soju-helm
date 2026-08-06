@@ -135,7 +135,7 @@ jobs:
         if: steps.existing.outputs.skip != 'true'
         uses: azure/setup-helm@v4
         with:
-          version: v3.16.0
+          version: v3.21.3
 
       - name: Update versions
         if: steps.existing.outputs.skip != 'true'
@@ -240,7 +240,7 @@ jobs:
         if: steps.existing.outputs.skip != 'true'
         uses: azure/setup-helm@v4
         with:
-          version: v3.16.0
+          version: v3.21.3
 
       - name: Update versions
         if: steps.existing.outputs.skip != 'true'
