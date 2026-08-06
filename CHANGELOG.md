@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.9] - 2026-08-06
+
+### Fixed
+
+- Admin-setup Job failed under Argo CD: unlike native Helm (which only runs `post-install` hooks once, on install), Argo CD re-triggers the hook on every sync -- and since `hook-delete-policy: hook-succeeded` only removes the Job after success, a completed run leaves nothing behind for Argo CD to recognize, so it recreates and reruns the Job on the next sync. `sojudb create-user` doesn't check for an existing user first; it just inserts and fails with a `UNIQUE constraint failed` (sqlite) / `duplicate key value violates unique constraint` (postgres) error once the admin user already exists. The Job now treats that specific error as success and exits 0, and `hook-delete-policy` gained `before-hook-creation` so a stuck **failed** Job from a prior run (which `hook-succeeded` alone never cleans up) doesn't block the next Argo CD sync or Kargo promotion.
+
 ## [0.1.8] - 2026-08-06
 
 ### Fixed
