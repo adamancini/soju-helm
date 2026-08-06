@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Admin-setup Job was broken by default: upstream soju's image is `FROM scratch` (no shell), and `sojudb create-user` only accepts the admin password via stdin, so `sh -c 'echo ... | sojudb ...'` could never run. `image.repository` now defaults to `ghcr.io/adamancini/soju`, a wrapper image (`docker/soju/Dockerfile`) that layers the same upstream binaries onto `busybox` to provide that shell. Built and pushed automatically by `.github/workflows/build-image.yml` whenever the pinned soju version changes.
+- Admin-setup Job was broken by default: upstream soju's image is `FROM scratch` (no shell), and `sojudb create-user` only accepts the admin password via stdin, so `sh -c 'echo ... | sojudb ...'` could never run. New `admin.image` value (defaulting to `ghcr.io/adamancini/soju`, a wrapper image at `docker/soju/Dockerfile` layering the same upstream binaries onto `busybox`) is now used only by that Job -- the main Deployment keeps running upstream's unmodified, shell-less image. Wrapper image is built and pushed automatically by `.github/workflows/build-image.yml` whenever the pinned soju version changes, and as a required step of `release.yml` before a chart release is published.
+- Pinned the pre-existing `clean-admin-socket` init container from `busybox:latest` to `busybox:1.36.1-musl`.
 
 ## [0.1.7] - 2026-06-21
 

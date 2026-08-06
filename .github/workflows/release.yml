@@ -6,8 +6,18 @@ on:
       - 'chart-v*'
 
 jobs:
+  build-wrapper-image:
+    name: Build Wrapper Image
+    uses: ./.github/workflows/build-image.yml
+    permissions:
+      contents: read
+      packages: write
+      security-events: write
+    secrets: inherit
+
   release:
     name: Release Helm Chart
+    needs: build-wrapper-image
     runs-on: ubuntu-latest
     permissions:
       contents: write

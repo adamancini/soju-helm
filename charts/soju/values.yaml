@@ -15,11 +15,8 @@ soju:
   motd: ""
 
 # Image configuration
-# ghcr.io/adamancini/soju wraps the upstream binaries (which ship FROM scratch,
-# with no shell) in busybox so the admin-setup Job below can pipe the admin
-# password into `sojudb` via `sh -c`. Built from docker/soju/Dockerfile.
 image:
-  repository: ghcr.io/adamancini/soju
+  repository: codeberg.org/emersion/soju
   tag: "v0.10.1"  # Pinned to upstream release
   pullPolicy: IfNotPresent
 
@@ -36,6 +33,17 @@ admin:
   # Use an existing Secret instead of generating one
   # Secret must have keys: admin-username, admin-password
   existingSecret: ""
+  # Image for the admin-setup Job only -- ghcr.io/adamancini/soju wraps the
+  # same upstream binaries in busybox so this Job has a shell to pipe the
+  # admin password into `sojudb` (upstream ships FROM scratch, no shell, and
+  # sojudb only reads the password from stdin). Built from docker/soju/Dockerfile.
+  # Kept off the main Deployment image on purpose: that container is
+  # network-facing and long-running, and shouldn't carry busybox's shell/
+  # netcat/wget/etc as attack-surface for the lifetime of the pod.
+  image:
+    repository: ghcr.io/adamancini/soju
+    tag: "v0.10.1"  # Pinned to upstream release
+    pullPolicy: IfNotPresent
 
 # Ingress configuration (serves gamja UI + soju WebSocket)
 ingress:

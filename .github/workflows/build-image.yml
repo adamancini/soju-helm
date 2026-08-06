@@ -8,6 +8,7 @@ on:
       - 'docker/soju/**'
       - 'charts/soju/values.yaml'
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
