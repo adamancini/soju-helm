@@ -87,7 +87,7 @@ postgresql:
   enabled: false
   image:
     repository: postgres
-    tag: "16-alpine"
+    tag: "18-alpine"
   storageSize: 5Gi
   storageClass: ""
   resources:
