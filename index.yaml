@@ -3,7 +3,36 @@ entries:
   soju:
   - apiVersion: v2
     appVersion: 0.10.1
-    created: "2026-08-06T18:12:34.038008961Z"
+    created: "2026-08-06T21:55:28.511400238Z"
+    dependencies:
+    - condition: gamja.enabled
+      name: gamja
+      repository: ""
+      version: 0.1.0
+    description: A Helm chart for deploying soju IRC bouncer with gamja web client
+    digest: 6c50c4835d2e21cd14873527f1cafcc43f4b1f038a4788e6ca825149d500bcd6
+    home: https://github.com/adamancini/soju-helm
+    keywords:
+    - soju
+    - irc
+    - bouncer
+    - gamja
+    - websocket
+    maintainers:
+    - name: adamancini
+      url: https://github.com/adamancini
+    name: soju
+    sources:
+    - https://codeberg.org/emersion/soju
+    - https://codeberg.org/emersion/gamja
+    - https://github.com/adamancini/soju-helm
+    type: application
+    urls:
+    - https://adamancini.github.io/soju-helm/soju-0.1.9.tgz
+    version: 0.1.9
+  - apiVersion: v2
+    appVersion: 0.10.1
+    created: "2026-08-06T21:55:28.510499269Z"
     dependencies:
     - condition: gamja.enabled
       name: gamja
@@ -32,7 +61,7 @@ entries:
     version: 0.1.8
   - apiVersion: v2
     appVersion: 0.10.1
-    created: "2026-08-06T18:12:34.037147701Z"
+    created: "2026-08-06T21:55:28.509628774Z"
     dependencies:
     - condition: gamja.enabled
       name: gamja
@@ -61,7 +90,7 @@ entries:
     version: 0.1.7
   - apiVersion: v2
     appVersion: 0.10.1
-    created: "2026-08-06T18:12:34.036284407Z"
+    created: "2026-08-06T21:55:28.508764899Z"
     dependencies:
     - condition: gamja.enabled
       name: gamja
@@ -90,7 +119,7 @@ entries:
     version: 0.1.6
   - apiVersion: v2
     appVersion: 0.10.1
-    created: "2026-08-06T18:12:34.035472149Z"
+    created: "2026-08-06T21:55:28.507866242Z"
     dependencies:
     - condition: gamja.enabled
       name: gamja
@@ -117,4 +146,4 @@ entries:
     urls:
     - https://adamancini.github.io/soju-helm/soju-0.1.5.tgz
     version: 0.1.5
-generated: "2026-08-06T18:12:34.034393573Z"
+generated: "2026-08-06T21:55:28.50549099Z"
