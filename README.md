@@ -64,7 +64,7 @@ kubectl port-forward svc/soju-gamja 8080:80
 | `soju.domain` | `""` | **Required.** IRC server hostname |
 | `soju.title` | `"soju IRC bouncer"` | Server title shown to clients |
 | `soju.motd` | `""` | Message of the Day file path |
-| `image.repository` | `codeberg.org/emersion/soju` | Container image |
+| `image.repository` | `ghcr.io/adamancini/soju` | Container image (busybox-wrapped soju, see below) |
 | `image.tag` | `""` | Image tag (defaults to `appVersion`) |
 | `image.pullPolicy` | `IfNotPresent` | Pull policy |
 | `admin.enabled` | `true` | Create admin user on install |
@@ -214,6 +214,12 @@ database:
 When `admin.enabled: true` (default), an admin user is created automatically via a post-install Helm hook. The hook runs `sojudb create-user` directly against the database, so it does not require a running soju server.
 
 Credentials are stored in a Secret and preserved across upgrades via `lookup`.
+
+### Container Image
+
+Upstream soju (`codeberg.org/emersion/soju`) is published `FROM scratch`: just the `soju`/`sojudb`/`sojuctl` binaries, no shell. `sojudb` only accepts the admin password via stdin (no flag or env var alternative), so the admin-setup Job's `sh -c 'echo ... | sojudb ...'` can't run against that image at all.
+
+This chart instead defaults to `ghcr.io/adamancini/soju`, built from [`docker/soju/Dockerfile`](docker/soju/Dockerfile): the same upstream binaries copied onto a `busybox` base, giving the Job a shell to pipe the password through. The image is rebuilt and pushed automatically whenever `charts/soju/values.yaml`'s pinned soju version changes (see `.github/workflows/build-image.yml`), tagged to match that version.
 
 ### Connecting an IRC Client
 

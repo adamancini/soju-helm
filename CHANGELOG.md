@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.8] - 2026-08-06
+
+### Fixed
+
+- Admin-setup Job was broken by default: upstream soju's image is `FROM scratch` (no shell), and `sojudb create-user` only accepts the admin password via stdin, so `sh -c 'echo ... | sojudb ...'` could never run. `image.repository` now defaults to `ghcr.io/adamancini/soju`, a wrapper image (`docker/soju/Dockerfile`) that layers the same upstream binaries onto `busybox` to provide that shell. Built and pushed automatically by `.github/workflows/build-image.yml` whenever the pinned soju version changes.
+
 ## [0.1.7] - 2026-06-21
 
 ### Changed

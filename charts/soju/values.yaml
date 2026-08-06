@@ -15,8 +15,11 @@ soju:
   motd: ""
 
 # Image configuration
+# ghcr.io/adamancini/soju wraps the upstream binaries (which ship FROM scratch,
+# with no shell) in busybox so the admin-setup Job below can pipe the admin
+# password into `sojudb` via `sh -c`. Built from docker/soju/Dockerfile.
 image:
-  repository: codeberg.org/emersion/soju
+  repository: ghcr.io/adamancini/soju
   tag: "v0.10.1"  # Pinned to upstream release
   pullPolicy: IfNotPresent
 
