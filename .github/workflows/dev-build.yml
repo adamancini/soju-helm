@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+    paths:
+      - 'charts/**'
 
 permissions:
   contents: read
@@ -12,6 +19,7 @@ permissions:
 jobs:
   build-wrapper-image:
     name: Build Wrapper Image
+    if: github.event_name == 'push'
     uses: ./.github/workflows/build-image.yml
     permissions:
       contents: read
@@ -22,6 +30,7 @@ jobs:
   dev-build:
     name: Package and Push Dev Chart
     needs: build-wrapper-image
+    if: always() && (needs.build-wrapper-image.result == 'success' || needs.build-wrapper-image.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -35,8 +44,13 @@ jobs:
       - name: Compute dev version
         id: version
         run: |
-          SHA=$(git rev-parse --short HEAD)
-          echo "version=0.0.0-main.${SHA}" >> "$GITHUB_OUTPUT"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            SHA="${{ github.event.pull_request.head.sha }}"
+            echo "version=0.0.0-pr${{ github.event.pull_request.number }}.${SHA:0:7}" >> "$GITHUB_OUTPUT"
+          else
+            SHA=$(git rev-parse --short HEAD)
+            echo "version=0.0.0-main.${SHA}" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Package Helm Chart (dev version)
         run: |

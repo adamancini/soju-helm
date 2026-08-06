@@ -36,6 +36,8 @@ helm install soju oci://ghcr.io/adamancini/charts/soju \
 
 Every push to `main` also publishes a dev build of the chart, tagged `0.0.0-main.<commit-sha>` (e.g. `0.0.0-main.a1b2c3d`) -- traceable to the exact commit, and always below every real release in semver precedence (`0.0.0 < 0.1.x`) so it can never satisfy a `>=` version constraint or be mistaken for `latest`. These are not GitHub Releases and aren't published to the GitHub Pages chart repo -- OCI only. See `.github/workflows/dev-build.yml`.
 
+PRs that touch `charts/**` get the same treatment, tagged `0.0.0-pr<number>.<commit-sha>` (e.g. `0.0.0-pr21.a1b2c3d`) on each push to the PR branch -- lets you `helm install`/`helm template` an in-review chart change directly from GHCR before it merges. Skipped for PRs that don't change chart source (e.g. pure CI/dependency bumps), and for forked PRs the registry push will simply fail closed (GitHub reduces `GITHUB_TOKEN` to read-only for fork-originated pull requests, by design).
+
 ### Install from Source
 
 ```bash
