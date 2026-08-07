@@ -60,6 +60,11 @@ jobs:
           image-ref: ghcr.io/${{ github.repository_owner }}/soju:${{ steps.version.outputs.tag }}
           format: 'sarif'
           output: 'trivy-image-results.sarif'
+          # soju/sojuctl/sojudb are copied straight from upstream
+          # codeberg.org/emersion/soju -- this repo doesn't build them, so
+          # CVEs in those binaries aren't actionable here. check-upstream.yml
+          # already tracks new upstream releases independently.
+          skip-files: '/usr/local/bin/soju,/usr/local/bin/sojuctl,/usr/local/bin/sojudb'
 
       - name: Upload Trivy results to GitHub Security
         uses: github/codeql-action/upload-sarif@v4
