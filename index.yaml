@@ -3,7 +3,36 @@ entries:
   soju:
   - apiVersion: v2
     appVersion: 0.10.1
-    created: "2026-08-06T21:55:28.511400238Z"
+    created: "2026-08-07T15:03:44.717898381Z"
+    dependencies:
+    - condition: gamja.enabled
+      name: gamja
+      repository: ""
+      version: 0.1.0
+    description: A Helm chart for deploying soju IRC bouncer with gamja web client
+    digest: ff67c71ff3a66eff0367d04d6be4bb2a97d151873e783d90f9c5b9c16c10056e
+    home: https://github.com/adamancini/soju-helm
+    keywords:
+    - soju
+    - irc
+    - bouncer
+    - gamja
+    - websocket
+    maintainers:
+    - name: adamancini
+      url: https://github.com/adamancini
+    name: soju
+    sources:
+    - https://codeberg.org/emersion/soju
+    - https://codeberg.org/emersion/gamja
+    - https://github.com/adamancini/soju-helm
+    type: application
+    urls:
+    - https://adamancini.github.io/soju-helm/soju-0.1.10.tgz
+    version: 0.1.10
+  - apiVersion: v2
+    appVersion: 0.10.1
+    created: "2026-08-07T15:03:44.721236915Z"
     dependencies:
     - condition: gamja.enabled
       name: gamja
@@ -32,7 +61,7 @@ entries:
     version: 0.1.9
   - apiVersion: v2
     appVersion: 0.10.1
-    created: "2026-08-06T21:55:28.510499269Z"
+    created: "2026-08-07T15:03:44.720596561Z"
     dependencies:
     - condition: gamja.enabled
       name: gamja
@@ -61,7 +90,7 @@ entries:
     version: 0.1.8
   - apiVersion: v2
     appVersion: 0.10.1
-    created: "2026-08-06T21:55:28.509628774Z"
+    created: "2026-08-07T15:03:44.719900196Z"
     dependencies:
     - condition: gamja.enabled
       name: gamja
@@ -90,7 +119,7 @@ entries:
     version: 0.1.7
   - apiVersion: v2
     appVersion: 0.10.1
-    created: "2026-08-06T21:55:28.508764899Z"
+    created: "2026-08-07T15:03:44.719229642Z"
     dependencies:
     - condition: gamja.enabled
       name: gamja
@@ -119,7 +148,7 @@ entries:
     version: 0.1.6
   - apiVersion: v2
     appVersion: 0.10.1
-    created: "2026-08-06T21:55:28.507866242Z"
+    created: "2026-08-07T15:03:44.718585882Z"
     dependencies:
     - condition: gamja.enabled
       name: gamja
@@ -146,4 +175,4 @@ entries:
     urls:
     - https://adamancini.github.io/soju-helm/soju-0.1.5.tgz
     version: 0.1.5
-generated: "2026-08-06T21:55:28.50549099Z"
+generated: "2026-08-07T15:03:44.716724244Z"
