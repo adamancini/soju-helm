@@ -17,7 +17,7 @@ soju:
 # Image configuration
 image:
   repository: codeberg.org/emersion/soju
-  tag: "v0.10.1"  # Pinned to upstream release
+  tag: "v0.11.0"  # Pinned to upstream release
   pullPolicy: IfNotPresent
 
 # Admin user (created via post-install Job using sojudb)
@@ -42,7 +42,7 @@ admin:
   # netcat/wget/etc as attack-surface for the lifetime of the pod.
   image:
     repository: ghcr.io/adamancini/soju
-    tag: "v0.10.1"  # Pinned to upstream release
+    tag: "v0.11.0"  # Pinned to upstream release
     pullPolicy: IfNotPresent
 
 # Ingress configuration (serves gamja UI + soju WebSocket)
