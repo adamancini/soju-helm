@@ -3,7 +3,7 @@
 # only (no flag/env alternative), so the chart's post-install Job needs `sh -c
 # 'echo ... | sojudb ...'` to run at all. This wraps the upstream binaries in
 # busybox to provide that shell without touching soju's own build.
-ARG SOJU_VERSION=v0.10.1
+ARG SOJU_VERSION=v0.11.1
 FROM codeberg.org/emersion/soju:${SOJU_VERSION} AS soju
 FROM busybox:1.38.0-musl
 
